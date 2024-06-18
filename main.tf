@@ -92,7 +92,7 @@ resource "aws_lambda_function" "leaderboard_http" {
   environment {
     variables = {
       VAULT_ADDR           = var.vault_address,
-      VAULT_NAMESPACE      = "admin/${var.vault_namespace}",
+      VAULT_NAMESPACE      = var.vault_namespace,
       VAULT_AUTH_ROLE      = aws_iam_role.leaderboard_http.name,
       VAULT_AUTH_PROVIDER  = "aws",
       VAULT_SECRET_PATH_DB = "database/creds/leaderboard-http",
@@ -114,7 +114,7 @@ resource "aws_lambda_function" "leaderboard_rec" {
   environment {
     variables = {
       VAULT_ADDR           = var.vault_address,
-      VAULT_NAMESPACE      = "admin/${var.vault_namespace}",
+      VAULT_NAMESPACE      = var.vault_namespace,
       VAULT_AUTH_ROLE      = aws_iam_role.leaderboard_rec.name,
       VAULT_AUTH_PROVIDER  = "aws",
       VAULT_SECRET_PATH_DB = "database/creds/leaderboard-rec",
