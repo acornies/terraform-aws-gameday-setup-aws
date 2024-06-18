@@ -151,7 +151,7 @@ resource "aws_db_instance" "leaderboard" {
   allocated_storage      = 20
   storage_type           = "gp2"
   engine                 = "postgres"
-  engine_version         = "15.3"
+  engine_version         = "15.4-r3"
   instance_class         = "db.t3.large"
   db_name                = "leaderboard"
   username               = "vaultadmin"
