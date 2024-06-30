@@ -14,13 +14,13 @@ output "aws_leaderboard_sqs_url" {
   value = aws_sqs_queue.leaderboard.url
 }
 
-output "aws_leaderboard_http_ecr_repo" {
-  value = aws_ecr_repository.leaderboard_http.repository_url
-}
+# output "aws_leaderboard_http_ecr_repo" {
+#   value = aws_ecr_repository.leaderboard_http.repository_url
+# }
 
-output "aws_leaderboard_rec_ecr_repo" {
-  value = aws_ecr_repository.leaderboard_rec.repository_url
-}
+# output "aws_leaderboard_rec_ecr_repo" {
+#   value = aws_ecr_repository.leaderboard_rec.repository_url
+# }
 
 output "aws_leaderboard_http_function_url" {
   value = aws_lambda_function_url.leaderboard_http.function_url
