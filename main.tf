@@ -73,13 +73,14 @@ resource "aws_sqs_queue_policy" "leaderboard" {
 }
 
 # Create image respoitories for the leaderboard funcs
-resource "aws_ecr_repository" "leaderboard_http" {
-  name = "gamify/leaderboard-http"
-}
+# uncomment when we've figure out order of operations
+# resource "aws_ecr_repository" "leaderboard_http" {
+#   name = "gamify/leaderboard-http"
+# }
 
-resource "aws_ecr_repository" "leaderboard_rec" {
-  name = "gamify/leaderboard-record"
-}
+# resource "aws_ecr_repository" "leaderboard_rec" {
+#   name = "gamify/leaderboard-record"
+# }
 
 resource "aws_lambda_function" "leaderboard_http" {
   function_name = "gamify-leaderboard-http"
