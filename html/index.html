@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+  <title>Gamify AWS and HCP Leaderboard</title>
+</head>
+
+<body>
+
+  <div class="container-fluid" style="padding-top: 15px;">
+    <div class="form-group">
+      <input type="text" class="form-control" id="inputLeaderboard" placeholder="Enter function URL">
+    </div>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+
+      // Example map new team label to account id
+      // TODO: Create UI elements to populate this map
+      const teamMap = {
+        '076676584357': 'Bit Lords',
+        '733970914540': 'Byte Dogs',
+        '881827915735': 'Hugs for Bugs',
+        '262041606093': 'Bootstrap Trojans',
+        '647583950536': 'Reboot Rebels',
+        '620362749088': 'Debug Thugs',
+      };
+
+      // Load the chart from the function URL
+      window.addEventListener('load', function() {
+        leaderboardUrl = localStorage.getItem('leaderboardUrl');
+        document.getElementById('inputLeaderboard').value = leaderboardUrl;
+
+        fetch(leaderboardUrl)
+          .then(response => response.json())
+          .then(response => {
+            newData = replaceKeys(response, teamMap)
+            deleteZeroes(newData)
+            chart.data.datasets[0].data = newData;
+            chart.update();
+          })
+          .catch(err => {
+            console.log(err.message || err);
+          })
+      });
+
+      const ctx = document.getElementById('myChart');
+    
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          datasets: [{
+            label: '# of points',
+            data: [],
+            borderWidth: 2,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.4)',
+              'rgba(255, 159, 64, 0.4)',
+              'rgba(255, 205, 86, 0.4)',
+              'rgba(75, 192, 192, 0.4)',
+              'rgba(54, 162, 235, 0.4)',
+              'rgba(153, 102, 255, 0.4)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132)',
+              'rgba(255, 159, 64)',
+              'rgba(255, 205, 86)',
+              'rgba(75, 192, 192)',
+              'rgba(54, 162, 235)',
+              'rgba(153, 102, 255)'
+            ],
+          }]
+        },
+        options: {
+          layout: {
+            padding: 15
+          },
+          responsive: true,
+          plugins: {
+            legend: {
+                display: true,
+                labels:[]
+            },
+            title: {
+              display: true,
+              text: 'TMX Gamify Leaderboard',
+              font: {
+                size: 20},
+              color: 'black'
+            },
+            subtitle: {
+              display: true,
+              text: 'Points are accumulated by relevant AWS resources and processed SQS messages'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Update the chart every 10 seconds
+      setInterval(function() {
+        leaderboardUrl = document.getElementById('inputLeaderboard').value;
+
+        localStorage.setItem('leaderboardUrl', leaderboardUrl);
+
+        fetch(leaderboardUrl)
+          .then(response => response.json())
+          .then(response => {
+            newData = replaceKeys(response, teamMap)
+            deleteZeroes(newData)
+            chart.data.datasets[0].data = newData;
+            chart.update();
+            chart.resize();
+          })
+          .catch(err => {
+            console.log(err.message || err);
+          })
+      }, 10000);
+
+      // Function delete all objects with values of 0 in teamMap
+      function deleteZeroes(obj) {
+        Object.keys(obj).forEach(function(key) {
+          if (obj[key] == 0) {
+            delete obj[key];
+          }
+        });
+        return obj;
+      }
+
+      // Function to replace keys with matching teamMap values
+      function replaceKeys(obj, map) {
+        Object.keys(obj).forEach(function(key) {
+          if (key in map) {
+            obj[map[key]] = obj[key];
+            delete obj[key];
+          }
+        });
+        return obj;
+      }
+    </script>
+</body>
+
+</html>

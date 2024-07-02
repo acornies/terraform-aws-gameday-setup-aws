@@ -370,3 +370,62 @@ resource "vault_aws_auth_backend_role" "leaderboard_rec" {
   token_policies           = ["default", "${vault_policy.leaderboard_rec.name}"]
   depends_on               = [vault_aws_auth_backend_client.leaderboard]
 }
+
+# Static hosting resources for frontend
+# ------------------------------
+resource "aws_s3_bucket" "leaderboard" {
+  bucket = "leaderboard-${var.event_name}"
+  tags = {
+    Environment = var.event_name
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "leaderboard" {
+  bucket = aws_s3_bucket.leaderboard.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "leaderboard" {
+  bucket = aws_s3_bucket.leaderboard.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "leaderboard" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.leaderboard,
+    aws_s3_bucket_public_access_block.leaderboard,
+  ]
+  bucket = aws_s3_bucket.leaderboard.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_object" "leaderboard_http" {
+  bucket       = aws_s3_bucket.leaderboard.id
+  key          = "index.html"
+  source       = "./html/index.html"
+  etag         = filemd5("./html/index.html")
+  content_type = "text/html"
+}
+
+resource "aws_s3_bucket_cors_configuration" "leaderboard_http" {
+  bucket = aws_s3_bucket.leaderboard.id
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "leaderboard" {
+  bucket = aws_s3_bucket.leaderboard.id
+
+  index_document {
+    suffix = "index.html"
+  }
+}
