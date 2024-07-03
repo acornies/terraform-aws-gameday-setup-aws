@@ -408,8 +408,8 @@ resource "aws_s3_bucket_acl" "leaderboard" {
 resource "aws_s3_object" "leaderboard_http" {
   bucket       = aws_s3_bucket.leaderboard.id
   key          = "index.html"
-  source       = "./html/index.html"
-  etag         = filemd5("./html/index.html")
+  source       = "${path.module}/html/index.html"
+  etag         = filemd5("${path.module}/html/index.html")
   content_type = "text/html"
 }
 
