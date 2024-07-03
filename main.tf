@@ -429,3 +429,21 @@ resource "aws_s3_bucket_website_configuration" "leaderboard" {
     suffix = "index.html"
   }
 }
+
+data "aws_iam_policy_document" "leaderboard_website_access" {
+  statement {
+    sid       = "PublicReadGetObject"
+    actions   = ["s3:GetObject"]
+    resources = [aws_s3_bucket.leaderboard.arn]
+    effect    = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "allow_all_website_access" {
+  bucket = aws_s3_bucket.leaderboard.id
+  policy = data.aws_iam_policy_document.leaderboard_website_access.json
+}
