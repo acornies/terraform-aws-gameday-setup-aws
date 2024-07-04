@@ -434,7 +434,7 @@ data "aws_iam_policy_document" "leaderboard_website_access" {
   statement {
     sid       = "PublicReadGetObject"
     actions   = ["s3:GetObject"]
-    resources = [aws_s3_bucket.leaderboard.arn]
+    resources = ["${aws_s3_bucket.leaderboard.arn}/*"]
     effect    = "Allow"
     principals {
       type        = "AWS"
